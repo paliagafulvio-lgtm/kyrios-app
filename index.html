@@ -3977,6 +3977,19 @@
   // Init libreria
   renderLibreria();
 
+  // ── NAVIGAZIONE ──
+  function showSection(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Mostra home all'avvio
+  showSection('home');
+
   // ── SISTEMA MUSICALE SEMPLICE ──
   let menuMusicaAperto = false;
 

@@ -1,0 +1,24 @@
+{
+  "name": "Comunità KYRIOS",
+  "short_name": "KYRIOS",
+  "description": "Comunità del Rinnovamento Carismatico Cattolico · Lecce",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a2744",
+  "theme_color": "#1a2744",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
