@@ -2714,6 +2714,24 @@
     {t:'«Ogni essere vivente lodi il Signore. Alleluia!»',r:'Salmo 150,6',m:'L\'ultima parola del Salterio. Alleluia. La lode è la prima e l\'ultima parola dell\'esistenza.'},
   ];
 
+  function caricaParolaVera() {
+    const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const d = new Date();
+    const oggiISO = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    fetch('parola-oggi.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).then(p => {
+      if (!p || p.data !== oggiISO) return;
+      const med = (p.meditazione || []).map(x => '<p style="margin:0 0 10px;">' + esc(x) + '</p>').join('');
+      document.getElementById('parolaContenitore').innerHTML = `
+        <div class="parola-card">
+          <div class="parola-giorno">✦ &nbsp; ${esc(p.giorno)} &nbsp; ✦</div>
+          ${p.immagine ? '<img src="parola/' + esc(p.immagine) + '" alt="Parola del giorno" style="width:100%;max-width:520px;border-radius:10px;margin:10px auto 14px;display:block;">' : ''}
+          <div class="parola-testo">«${esc(p.portante)}»</div>
+          <div class="parola-ref">Vangelo · ${esc(p.vangelo)}</div>
+          <div class="parola-meditazione" style="text-align:left;">${med}<p style="margin:12px 0 0;text-align:center;font-weight:700;">${esc(p.saluto || '')}</p></div>
+        </div>`;
+    }).catch(() => {});
+  }
+
   function renderParola() {
     const oggi = new Date();
     const inizio = new Date(oggi.getFullYear(), 0, 0);
@@ -2745,6 +2763,7 @@
       </div>`;
     }
     document.getElementById('parolaArchivio').innerHTML = archivio;
+    caricaParolaVera();
   }
 
   renderParola();
