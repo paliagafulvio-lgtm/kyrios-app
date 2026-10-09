@@ -2718,9 +2718,10 @@
       document.getElementById('parolaContenitore').innerHTML = `
         <div class="parola-card">
           <div class="parola-giorno">✦ &nbsp; ${esc(p.giorno)} &nbsp; ✦</div>
-          ${p.immagine ? '<img src="parola/' + esc(p.immagine) + '" alt="Parola del giorno" style="width:100%;max-width:520px;border-radius:10px;margin:10px auto 14px;display:block;">' : ''}
+          ${p.immagine && !p.video ? '<img src="parola/' + esc(p.immagine) + '" alt="Parola del giorno" style="width:100%;max-width:520px;border-radius:10px;margin:10px auto 14px;display:block;">' : ''}
           <div class="parola-testo">«${esc(p.portante)}»</div>
           <div class="parola-ref">Vangelo · ${esc(p.vangelo)}</div>
+          ${p.video ? '<video controls preload="none" playsinline poster="parola/' + esc(p.immagine || '') + '" style="width:100%;max-width:520px;border-radius:10px;margin:12px auto 16px;display:block;background:#000;"><source src="parola/' + esc(p.video) + '" type="video/mp4"></video>' : ''}
           <div class="parola-meditazione" style="text-align:left;">${med}<p style="margin:12px 0 0;text-align:center;font-weight:700;">${esc(p.saluto || '')}</p></div>
         </div>`;
     }).catch(() => {});
