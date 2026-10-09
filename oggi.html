@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oggi · Comunità KYRIOS</title>
+<!-- Pagina piccola da «incorporare» nel sito Google: mostra la Parola del Giorno e il Buongiorno di oggi.
+     Legge gli stessi file dell'app (parola-oggi.json e buongiorno-oggi.json), quindi si aggiorna da sola ogni mattina. -->
+<style>
+  :root { --blu-notte:#1a2744; --oro:#c8a84b; --oro-chiaro:#e8cc80; --bianco:#ffffff; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:12px; background:#f7f3ea; font-family:Georgia,'Times New Roman',serif; color:var(--blu-notte); }
+  .box { background:linear-gradient(135deg,var(--blu-notte),#0f1c33); border:2px solid var(--oro); border-radius:14px; padding:16px 14px; margin:0 auto 16px; max-width:560px; text-align:center; color:var(--bianco); }
+  .titolo { font-size:1.25rem; letter-spacing:2px; color:var(--oro-chiaro); margin-bottom:6px; }
+  .giorno { font-size:0.8rem; letter-spacing:1px; color:var(--oro); text-transform:uppercase; margin-bottom:12px; }
+  .portante { font-style:italic; font-size:1.05rem; line-height:1.5; margin:4px 0 6px; }
+  .ref { font-size:0.85rem; color:var(--oro); margin-bottom:12px; }
+  img, video { width:100%; border-radius:10px; display:block; margin:0 auto; background:#000; }
+  .med { text-align:left; background:rgba(255,255,255,0.07); border-radius:10px; padding:12px 14px; margin-top:14px; font-family:Arial,Helvetica,sans-serif; font-size:0.95rem; line-height:1.55; }
+  .med p { margin:0 0 8px; }
+  .saluto { text-align:center; font-weight:bold; margin-top:10px !important; }
+  .vuoto { text-align:center; color:#666; font-style:italic; padding:20px; }
+  .app { display:block; text-align:center; margin:4px auto 0; color:var(--blu-notte); font-size:0.85rem; }
+</style>
+</head>
+<body>
+  <div id="buongiorno"></div>
+  <div id="parola"></div>
+  <div id="vuoto" class="vuoto" style="display:none;">La Parola di oggi arriva presto.</div>
+  <a class="app" href="https://paliagafulvio-lgtm.github.io/kyrios-app/" target="_blank" rel="noopener">Apri l'app della Comunità KYRIOS</a>
+<script>
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const d = new Date();
+  const oggi = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const leggi = f => fetch(f + '?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null);
+  const video = (src, poster) => '<video controls preload="none" playsinline poster="' + poster + '"><source src="' + esc(src) + '" type="video/mp4"></video>';
+  Promise.all([leggi('buongiorno-oggi.json'), leggi('parola-oggi.json')]).then(([b, p]) => {
+    let qualcosa = false;
+    if (b && b.data === oggi && b.immagine) {
+      const img = 'buongiorno/' + esc(b.immagine);
+      document.getElementById('buongiorno').innerHTML =
+        '<div class="box"><div class="titolo">Buongiorno</div>' + (b.video ? video(b.video, img) : '<img src="' + img + '" alt="Buongiorno">') + '</div>';
+      qualcosa = true;
+    }
+    if (p && p.data === oggi) {
+      const img = p.immagine ? 'parola/' + esc(p.immagine) : '';
+      const med = (p.meditazione || []).map(x => '<p>' + esc(x) + '</p>').join('');
+      document.getElementById('parola').innerHTML =
+        '<div class="box"><div class="titolo">Parola del Giorno</div>' +
+        '<div class="giorno">' + esc(p.giorno || '') + '</div>' +
+        '<div class="portante">«' + esc(p.portante || '') + '»</div>' +
+        '<div class="ref">Vangelo · ' + esc(p.vangelo || '') + '</div>' +
+        (p.video ? video(/^https?:/.test(p.video) ? p.video : 'parola/' + p.video, img) : (img ? '<img src="' + img + '" alt="Parola del giorno">' : '')) +
+        (med ? '<div class="med">' + med + '<p class="saluto">' + esc(p.saluto || '') + '</p></div>' : '') +
+        '</div>';
+      qualcosa = true;
+    }
+    if (!qualcosa) document.getElementById('vuoto').style.display = 'block';
+  });
+</script>
+</body>
+</html>
