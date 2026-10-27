@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Auguri KYRIOS</title>
+<meta name="description" content="Scrivi un nome e crea il video di auguri di compleanno da mandare su WhatsApp.">
+<meta name="theme-color" content="#7a2335">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icone/icona-192.png">
+<link rel="apple-touch-icon" href="icone/icona-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Auguri">
+<style>
+@font-face { font-family: "GreatVibesKY"; src: url("font/GreatVibes-Regular.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "CormorantKY"; src: url("font/CormorantGaramond-Italic-VF.woff2") format("woff2"); font-style: italic; font-weight: 300 700; font-display: block; }
+@font-face { font-family: "CormorantUI"; src: url("font/CormorantGaramond-VF.woff2") format("woff2"); font-weight: 300 700; }
+@font-face { font-family: "CinzelKY"; src: url("font/Cinzel-VF.woff2") format("woff2"); font-weight: 400 900; }
+:root {
+  --carta: #f8efe1; --carta2: #fffaf2; --inchiostro: #3a2420; --tenue: #7b5d52;
+  --bordeaux: #7a2335; --bordeaux2: #5e1a29; --ottanio: #2b6467; --oro: #c99a3c;
+  --wa: #1d8a4c; --wa2: #146b3a; --linea: #e4d2bd; --ombra: 0 2px 0 rgba(90,50,30,.08), 0 10px 26px rgba(90,50,30,.14);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--carta); color: var(--inchiostro);
+  font-family: "CormorantUI", Georgia, "Times New Roman", serif; font-size: 22px; line-height: 1.4;
+  background-image: radial-gradient(circle at 15% 0%, #fbe3d3 0, transparent 40%), radial-gradient(circle at 100% 30%, #f3e6d0 0, transparent 35%);
+  min-height: 100vh;
+}
+.pagina { max-width: 1120px; margin: 0 auto; padding: 18px 16px 48px; padding-top: max(18px, env(safe-area-inset-top)); }
+header { text-align: center; margin: 4px 0 18px; }
+header .piccolo { font-family: "CinzelKY", serif; letter-spacing: .22em; font-size: 15px; color: var(--tenue); text-transform: uppercase; }
+header h1 { font-family: "GreatVibesKY", cursive; font-weight: 400; font-size: 66px; line-height: 1.05; margin: 2px 0 0; color: var(--bordeaux); }
+header p { margin: 4px 0 0; font-size: 21px; color: var(--tenue); font-style: italic; }
+.griglia { display: grid; gap: 22px; }
+@media (min-width: 900px) { .griglia { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } .lato { position: sticky; top: 16px; } }
+.foglio {
+  background: var(--carta2); border-radius: 22px; padding: 22px 20px; box-shadow: var(--ombra);
+  border: 1px solid var(--linea); position: relative;
+}
+label.titolo, span.titolo { display: block; font-family: "CinzelKY", serif; font-weight: 700; font-size: 18px; letter-spacing: .08em; color: var(--bordeaux); margin: 0 0 8px; text-transform: uppercase; }
+.campo + .campo { margin-top: 20px; }
+input[type=text] {
+  width: 100%; font: inherit; font-size: 26px; padding: 14px 18px; min-height: 66px; color: var(--inchiostro);
+  border: 2px solid var(--linea); border-radius: 16px; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s;
+}
+input[type=text]:focus { border-color: var(--oro); box-shadow: 0 0 0 4px rgba(201,154,60,.22); }
+#frase { font-size: 22px; }
+input::placeholder { color: #b39c8f; font-style: italic; }
+.aiuto { font-size: 19px; color: var(--tenue); margin: 6px 2px 0; }
+.spunta { display: flex; gap: 14px; align-items: center; margin-top: 20px; font-size: 22px; cursor: pointer; user-select: none; }
+.spunta input { width: 32px; height: 32px; accent-color: var(--bordeaux); flex: none; }
+.bottone {
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 76px; padding: 14px 20px;
+  font-family: "CinzelKY", serif; font-weight: 700; font-size: 23px; letter-spacing: .04em; color: #fff; border: 0; border-radius: 18px; cursor: pointer;
+  background: linear-gradient(180deg, #8f2c40, var(--bordeaux2)); box-shadow: 0 6px 0 #4a1320, 0 12px 24px rgba(94,26,41,.3);
+  transition: transform .08s, box-shadow .08s; -webkit-tap-highlight-color: transparent; text-decoration: none;
+}
+.bottone:active { transform: translateY(4px); box-shadow: 0 2px 0 #4a1320, 0 6px 12px rgba(94,26,41,.3); }
+.bottone[disabled] { opacity: .55; cursor: default; }
+.bottone svg { width: 30px; height: 30px; flex: none; }
+.bottone.wa { background: linear-gradient(180deg, #25a25c, var(--wa2)); box-shadow: 0 6px 0 #0d4f2a, 0 12px 24px rgba(20,107,58,.3); }
+.bottone.wa:active { box-shadow: 0 2px 0 #0d4f2a; }
+.bottone.chiaro { background: #fff; color: var(--ottanio); border: 2px solid var(--ottanio); box-shadow: 0 5px 0 #c8d9d6; }
+.bottone.chiaro:active { box-shadow: 0 1px 0 #c8d9d6; }
+.crea { margin-top: 24px; }
+.stili { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.stile { font: inherit; background: #fff; border: 3px solid var(--linea); border-radius: 18px; padding: 8px 8px 10px; cursor: pointer; display: grid; gap: 6px; justify-items: center; color: var(--inchiostro); -webkit-tap-highlight-color: transparent; }
+.stile img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: center 72%; border-radius: 12px; display: block; }
+.stile span { font-family: "CinzelKY", serif; font-weight: 700; font-size: 20px; }
+.stile[aria-pressed=true] { border-color: var(--bordeaux); box-shadow: 0 0 0 4px rgba(122,35,53,.18); }
+.stile[aria-pressed=true] span::before { content: "✓ "; color: var(--bordeaux); }
+.messaggio { margin-top: 14px; padding: 14px 16px; border-radius: 14px; font-size: 21px; display: none; }
+.messaggio.mostra { display: block; }
+.messaggio.avviso { background: #fff3d9; border: 2px solid #e8c07a; color: #6b4a12; }
+.messaggio.errore { background: #fde6e4; border: 2px solid #e5a29b; color: #7a2323; }
+.messaggio.ok { background: #e6f4ec; border: 2px solid #9fcfb3; color: #1d5b37; }
+.anteprima { width: min(64vw, 300px); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; box-shadow: var(--ombra); background: #f1dccb; position: relative; }
+@media (min-width: 900px) { .anteprima { width: 100%; max-width: 340px; } }
+.anteprima canvas, .anteprima video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.anteprima video { position: absolute; inset: 0; background: #000; }
+.didascalia { text-align: center; font-size: 19px; color: var(--tenue); margin: 10px 0 0; font-style: italic; }
+.avanzamento { display: none; margin-top: 22px; }
+.avanzamento.mostra { display: block; }
+.barra { height: 26px; border-radius: 13px; background: #efdfcc; overflow: hidden; border: 1px solid var(--linea); }
+.barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--oro), #e8b04a, var(--bordeaux)); border-radius: 13px; transition: width .25s linear; }
+.avanzamento p { margin: 10px 0 0; font-size: 22px; text-align: center; }
+.avanzamento p b { color: var(--bordeaux); }
+.risultato { display: none; margin-top: 22px; }
+.risultato.mostra { display: grid; gap: 18px; }
+.risultato h2 { margin: 0; font-family: "CinzelKY", serif; font-size: 22px; color: var(--ottanio); text-align: center; letter-spacing: .05em; }
+.altro { background: none; border: 0; font: inherit; font-size: 21px; color: var(--bordeaux); text-decoration: underline; cursor: pointer; padding: 10px; justify-self: center; }
+.nascosto { display: none !important; }
+footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 28px; }
+@media (max-width: 420px) { header h1 { font-size: 58px; } .foglio { padding: 20px 16px; } }
+@media (prefers-reduced-motion: reduce) { .barra i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <header>
+    <div class="piccolo">Comunità KYRIOS</div>
+    <h1>Auguri</h1>
+    <p>Scrivi il nome, premi il bottone: il video è pronto.</p>
+  </header>
+
+  <div class="griglia">
+    <main class="foglio">
+      <div class="campo">
+        <label class="titolo" for="nome">Nome</label>
+        <input type="text" id="nome" placeholder="Scrivi il nome" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="60" enterkeyhint="done">
+        <p class="aiuto">Puoi scrivere anche più nomi insieme, per esempio «Anna e Marco».</p>
+      </div>
+      <div class="campo">
+        <label class="titolo" for="frase">Frase</label>
+        <input type="text" id="frase" value="Auguri di un buon compleanno" autocomplete="off" maxlength="70" enterkeyhint="done">
+      </div>
+      <div class="campo">
+        <span class="titolo">Stile</span>
+        <div class="stili">
+          <button type="button" class="stile" data-stile="fiori" aria-pressed="true"><img src="img/stile-fiori.jpg" alt=""><span>Fiori</span></button>
+          <button type="button" class="stile" data-stile="festa" aria-pressed="false"><img src="img/stile-festa.jpg" alt=""><span>Festa</span></button>
+        </div>
+      </div>
+      <label class="spunta"><input type="checkbox" id="firma" checked> Alla fine metti la firma «Fulvio»</label>
+
+      <button class="bottone crea" id="crea" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5 21 7.5v9l-5.5-3"/></svg>
+        Crea il video
+      </button>
+      <div class="messaggio" id="msg" role="status"></div>
+
+      <div class="avanzamento" id="avanzamento" aria-live="polite">
+        <div class="barra"><i id="barra"></i></div>
+        <p><b>Sto creando il video…</b> resta su questa pagina.</p>
+        <p id="mancano"></p>
+      </div>
+
+      <div class="risultato" id="risultato">
+        <h2>Il video è pronto</h2>
+        <button class="bottone wa" id="manda" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.6.3 2.7 2.7 0 0 0-.9 2c0 1.2.9 2.4 1 2.5.1.2 1.7 2.7 4.2 3.8 1.6.7 2.2.7 3 .6.5-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2l-.5-.4Z"/></svg>
+          Manda su WhatsApp
+        </button>
+        <button class="bottone chiaro" id="salvaVideo" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+          Salva il video
+        </button>
+        <button class="bottone chiaro" id="salvaCopertina" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+          Salva la copertina
+        </button>
+        <button class="altro" id="altro" type="button">Fai un altro video</button>
+      </div>
+    </main>
+
+    <aside class="lato">
+      <div class="anteprima" id="riquadro">
+        <canvas id="tela" width="1080" height="1920" aria-label="Anteprima della copertina"></canvas>
+        <video id="video" class="nascosto" playsinline controls></video>
+      </div>
+      <p class="didascalia" id="didascalia">Anteprima della copertina</p>
+    </aside>
+  </div>
+  <footer>Auguri KYRIOS · funziona su computer e telefono</footer>
+</div>
+<script src="scena.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
