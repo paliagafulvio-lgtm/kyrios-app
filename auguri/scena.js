@@ -95,14 +95,14 @@
   var CANDELA_TOP = 1445, STOPPINO = 1433;
   /* stili: «festa» tutto disegnato a strati; «fiori» con l'immagine di Gemini (sfondo2) */
   var STILI = {
-    festa: { candele: [370, 455, 540, 625, 710], stoppino: 1433, fiammaK: 1, nome: [1158, 1378], festoni: true,
+    festa: { candele: [370, 455, 540, 625, 710], stoppino: 1433, fiammaK: 1, nome: [1158, 1364], festoni: true, aloneK: 1, petali: false, fondo: ['#fdf3e7', '#f3d6c4'],
       conf: CONF_COL, frase: '#7a2335', fregio: '#c99a3c', cuore: '#c4495f', firma: '#8a3b2c', stelle: ['#e8b04a', '#c4495f'], alone: [540, 1400] },
-    fiori: { candele: null, stoppino: 0, fiammaK: 1.35, nome: [1156, 1340], festoni: false,
-      conf: ['#e9866f', '#d8b25a', '#9cb59a', '#f3d9c4', '#c7a04a', '#f2a48f', '#fffaf0'], frase: '#8a3a2b', fregio: '#c7a04a', cuore: '#e07a64', firma: '#8a3a2b', stelle: ['#d4ab52', '#e9866f'], alone: [540, 1330] }
+    fiori: { candele: null, stoppino: 0, fiammaK: 1.2, nome: [1156, 1396], festoni: false, aloneK: .5, petali: true, fondo: ['#fbf7ee', '#efe3cf'],
+      conf: ['#f2a48f', '#9cb59a', '#f6c3b5', '#b7c9a8', '#e9866f', '#d8b25a', '#f3d9c4'], frase: '#8a3a2b', fregio: '#c7a04a', cuore: '#e07a64', firma: '#8a3a2b', stelle: ['#d4ab52', '#e9866f'], alone: [540, 1330] }
   };
   var ST = STILI.festa, NOME_STILE = 'festa';
   // posizione dell'immagine di Gemini (768x1376) sulla tela
-  var IMG_S = 1.36, IMG_SX = W / 768, IMG_DX = 0, IMG_DY = 164, IMG_TAGLIO = 760; // riga dell'immagine dove si separa la torta
+  var IMG_S = 1.12, IMG_SX = 1.12, IMG_DX = (W - 768 * 1.12) / 2, IMG_DY = 440, IMG_TAGLIO = 760; // riga dell'immagine dove si separa la torta
   var FIAMME_IMG = [[341, 926], [383, 918], [425.5, 925]];
 
   function strato(top, alt, prof, disegna) {
@@ -116,18 +116,20 @@
     NOME_STILE = STILI[nome] ? nome : 'festa'; ST = STILI[NOME_STILE];
     if (!CACHE_STRATI[NOME_STILE]) CACHE_STRATI[NOME_STILE] = NOME_STILE === 'fiori' && img ? preparaFiori(img) : preparaStrati(null);
     STRATI = CACHE_STRATI[NOME_STILE];
-    if (NOME_STILE === 'fiori') { ST.candele = FIAMME_IMG.map(function (f) { return IMG_DX + f[0] * IMG_SX; }); ST.stoppino = IMG_DY + 926 * IMG_S; }
+    if (NOME_STILE === 'fiori') { ST.candele = FIAMME_IMG.map(function (f) { return IMG_DX + f[0] * IMG_SX; }); ST.stoppino = IMG_DY + 926 * IMG_S; ST.alone = [540, ST.stoppino - 70]; }
     NOME_TOP = ST.nome[0]; NOME_BOT = ST.nome[1];
   }
   function preparaFiori(img) {
     var s = [], sc = 768 / img.width; // l'immagine può arrivare in altre misure: si normalizza a 768 di larghezza
-    var S = IMG_S * sc, iw = W, ih = img.height * S;
+    var S = IMG_S * sc, iw = img.width * S, ih = img.height * S, dx2 = IMG_DX + iw;
     // fondo crema fermo (parte alta dell'immagine, sfumata in basso)
     var c0 = tela(W, H), x0 = c0.getContext('2d');
     var g = x0.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f7f2e6'); g.addColorStop(.5, '#f3ead9'); g.addColorStop(1, '#efe3cf');
     x0.fillStyle = g; x0.fillRect(0, 0, W, H);
     var parte = tela(W, H), xp = parte.getContext('2d');
     xp.drawImage(img, IMG_DX, IMG_DY, iw, ih);
+    xp.drawImage(img, 0, 0, 2, img.height, 0, IMG_DY, IMG_DX + 1, ih);                     // bordi allungati ai lati
+    xp.drawImage(img, img.width - 2, 0, 2, img.height, dx2 - 1, IMG_DY, W - dx2 + 1, ih);
     xp.drawImage(img, 0, 0, img.width, 3, 0, 0, W, IMG_DY + 2); // la riga più alta dell'immagine, allungata fino in cima
     xp.globalCompositeOperation = 'destination-in';
     var m = xp.createLinearGradient(0, 0, 0, H), y1 = 1, y2 = IMG_DY + (IMG_TAGLIO - 80) * IMG_S, y3 = IMG_DY + IMG_TAGLIO * IMG_S;
@@ -141,8 +143,8 @@
     var top = Math.floor(IMG_DY + (IMG_TAGLIO - 80) * IMG_S), alt = H + 80 - top;
     var c1 = tela(W + 2 * M, alt), x1 = c1.getContext('2d');
     x1.drawImage(img, M + IMG_DX, IMG_DY - top, iw, ih);
-    x1.drawImage(img, 0, 0, 2, img.height, 0, IMG_DY - top, M + 1, ih);                       // bordi allungati
-    x1.drawImage(img, img.width - 2, 0, 2, img.height, M + W - 1, IMG_DY - top, M + 1, ih);
+    x1.drawImage(img, 0, 0, 2, img.height, 0, IMG_DY - top, M + IMG_DX + 1, ih);                       // bordi allungati
+    x1.drawImage(img, img.width - 2, 0, 2, img.height, M + dx2 - 1, IMG_DY - top, c1.width - (M + dx2) + 1, ih);
     x1.globalCompositeOperation = 'destination-in';
     var m1 = x1.createLinearGradient(0, 0, 0, alt); m1.addColorStop(0, 'rgba(0,0,0,0)'); m1.addColorStop(80 * IMG_S / alt, 'rgba(0,0,0,1)'); m1.addColorStop(1, 'rgba(0,0,0,1)');
     x1.fillStyle = m1; x1.fillRect(0, 0, c1.width, alt);
@@ -338,47 +340,48 @@
     return { l: l, r: r, w: l + r, asc: m.actualBoundingBoxAscent || size * .7, desc: m.actualBoundingBoxDescent || size * .2 };
   }
   function rigaNome(testo, size, base) { // base = baseline sulla pagina
-    var c = tela(W, 420), x = c.getContext('2d'), m = misura(x, testo, size);
+    var c = tela(W, 600), x = c.getContext('2d'), m = misura(x, testo, size);
     var sx = 540 - m.w / 2 + m.l;
     x.font = size + 'px ' + FONT_NOME; x.lineJoin = 'round';
-    var lw = Math.max(4, size * .045);
-    x.save(); x.shadowColor = 'rgba(20,10,0,.55)'; x.shadowBlur = 14; x.shadowOffsetY = 7;
-    x.lineWidth = lw; x.strokeStyle = '#3d2508'; x.strokeText(testo, sx, 210); x.restore();
-    x.lineWidth = lw; x.strokeStyle = '#3d2508'; x.strokeText(testo, sx, 210);
-    var g = x.createLinearGradient(0, 210 - m.asc, 0, 210 + m.desc);
-    g.addColorStop(0, '#fff3b8'); g.addColorStop(.38, '#f2c75a'); g.addColorStop(.62, '#c18a26'); g.addColorStop(1, '#f6d77c');
-    x.fillStyle = g; x.fillText(testo, sx, 210);
-    return { c: c, yPag: base - 210, sx: sx - m.l - 10, ex: sx + m.r + 10, top: 210 - m.asc, bot: 210 + m.desc };
+    var lw = Math.max(6, size * .07);
+    x.save(); x.shadowColor = 'rgba(45,22,0,.55)'; x.shadowBlur = 26; x.shadowOffsetY = 6;
+    x.lineWidth = lw * 1.5; x.strokeStyle = 'rgba(58,31,5,.55)'; x.strokeText(testo, sx, 300); x.restore();
+    x.lineWidth = lw; x.strokeStyle = '#3a1f05'; x.strokeText(testo, sx, 300);
+    var g = x.createLinearGradient(0, 300 - m.asc, 0, 300 + m.desc);
+    g.addColorStop(0, '#ffe7a0'); g.addColorStop(.35, '#ebb64e'); g.addColorStop(.62, '#b0741c'); g.addColorStop(.85, '#d9a542'); g.addColorStop(1, '#f0cc6e');
+    x.fillStyle = g; x.fillText(testo, sx, 300);
+    return { c: c, yPag: base - 300, sx: sx - m.l - 10, ex: sx + m.r + 10, top: 300 - m.asc, bot: 300 + m.desc };
   }
   function preparaNome(nome) {
     var chiave = NOME_STILE + '|' + nome; if (cacheNome[chiave]) return cacheNome[chiave];
-    var x = tela(10, 10).getContext('2d'), maxW = W - 2 * 90, maxH = NOME_BOT - NOME_TOP, mid = (NOME_TOP + NOME_BOT) / 2;
+    var x = tela(10, 10).getContext('2d'), maxW = W - 2 * 84, maxH = NOME_BOT - NOME_TOP, mid = (NOME_TOP + NOME_BOT) / 2;
     // una riga
-    var s1 = 270, m1;
+    var s1 = 246, m1;
     for (; s1 > 50; s1 -= 4) { m1 = misura(x, nome, s1); if (m1.w <= maxW && m1.asc + m1.desc <= maxH) break; }
     var righe, size;
     // due righe, se una sola riga viene troppo piccola e ci sono più parole
     var parole = nome.trim().split(/\s+/), best = null;
     if (s1 < 180 && parole.length > 1) {
       for (var k = 1; k < parole.length; k++) {
-        var a = parole.slice(0, k).join(' '), b = parole.slice(k).join(' ');
+        var a = parole.slice(0, k).join(' '), b = parole.slice(k).join(' '), bonus = /,$/.test(a) || /^(e|ed)$/i.test(parole[k]) ? 1 : 0;
         for (var s2 = 230; s2 > 50; s2 -= 4) {
-          var ma = misura(x, a, s2), mb = misura(x, b, s2), lh = s2 * .78;
+          var ma = misura(x, a, s2), mb = misura(x, b, s2), lh = s2 * .74;
           var alt = ma.asc + lh + mb.desc;
           if (Math.max(ma.w, mb.w) <= maxW && alt <= maxH) {
-            if (!best || s2 > best.size || (s2 === best.size && Math.abs(ma.w - mb.w) < best.diff)) best = { size: s2, a: a, b: b, ma: ma, mb: mb, lh: lh, diff: Math.abs(ma.w - mb.w) };
+            var punti = s2 + bonus * 6; if (!best || punti > best.punti) best = { size: s2, punti: punti, a: a, b: b, ma: ma, mb: mb, lh: lh };
             break;
           }
         }
       }
     }
-    if (best && best.size > s1 * 1.06) {
+    if (best && (best.size > s1 * 1.06 || (s1 < 150 && best.size >= s1 * .96))) {
       size = best.size;
       var alt2 = best.ma.asc + best.lh + best.mb.desc, b1 = mid - alt2 / 2 + best.ma.asc;
       righe = [rigaNome(best.a, size, b1), rigaNome(best.b, size, b1 + best.lh)];
     } else {
       size = s1;
-      righe = [rigaNome(nome, size, mid + (m1.asc - m1.desc) / 2)];
+      // una riga sola: appoggiata in basso, vicino alla torta (ma mai sopra il 60%)
+      righe = [rigaNome(nome, size, Math.max(NOME_TOP + m1.asc, NOME_BOT - m1.desc - 6))];
     }
     var tot = 0; righe.forEach(function (r) { r.w = r.ex - r.sx; tot += r.w; });
     var acc = 0; righe.forEach(function (r) { r.p0 = acc / tot; acc += r.w; r.p1 = acc / tot; });
@@ -389,7 +392,7 @@
     N.ex = Math.max.apply(null, righe.map(function (r) { return r.ex; }));
     var rr = rng(nome.length * 97 + 5);
     for (var i = 0; i < 14; i++) { var R = righe[i % righe.length];
-      N.lucc.push({ x: R.sx + 20 + rr() * (R.w - 40), y: R.yPag + R.top + rr() * (R.bot - R.top), f: rr() * 6.28, v: 1.2 + rr() * 1.6, s: 10 + rr() * 14 }); }
+      N.lucc.push({ x: R.sx + 20 + rr() * (R.w - 40), y: R.yPag + (i % 2 ? R.top + rr() * (R.bot - R.top) * .2 : R.bot - rr() * (R.bot - R.top) * .2), f: rr() * 6.28, v: 1.2 + rr() * 1.6, s: 10 + rr() * 14 }); }
     // punta della penna: posizione in funzione del progresso
     N.punta = function (p) {
       for (var j = 0; j < righe.length; j++) { var r = righe[j];
@@ -413,12 +416,12 @@
     }
     ctx.globalAlpha = alfa;
     if (lucePos !== null && lucePos > -0.2 && lucePos < 1.2 && prog >= 1) {
-      if (!tmpNome) tmpNome = tela(W, 420);
-      var tx = tmpNome.getContext('2d'); tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, W, 420);
+      if (!tmpNome) tmpNome = tela(W, 600);
+      var tx = tmpNome.getContext('2d'); tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, W, 600);
       tx.drawImage(R.c, 0, 0); tx.globalCompositeOperation = 'source-atop';
-      var cxl = R.sx + R.w * lucePos, g = tx.createLinearGradient(cxl - 90, 0, cxl + 90, 0);
-      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,255,240,.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-      tx.fillStyle = g; tx.fillRect(cxl - 90, 0, 180, 420);
+      var cxl = R.sx + R.w * lucePos, g = tx.createLinearGradient(cxl - 45, 0, cxl + 45, 0);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,246,215,.6)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      tx.fillStyle = g; tx.fillRect(cxl - 45, 0, 90, 600);
       ctx.drawImage(tmpNome, 0, y);
     }
   }
@@ -516,8 +519,14 @@
     ctx.save(); ctx.globalAlpha = alfa; ctx.translate(x, y); ctx.rotate(p.rot + t * p.vr);
     ctx.scale(1, Math.max(.18, Math.abs(flip)));
     var col = ST.conf[p.ci % ST.conf.length];
-    ctx.fillStyle = flip < 0 ? scurisci(col, .78) : col;
+    if (ST.petali && p.forma === 2) col = '#d8b25a';
+    ctx.fillStyle = flip < 0 ? scurisci(col, .8) : col;
     var s = p.s, q = new Path2D();
+    if (ST.petali && p.forma !== 2) { // petalo di carta con la sua nervatura
+      s *= 1.25; q.moveTo(0, -s * .62); q.quadraticCurveTo(s * .48, -s * .1, 0, s * .62); q.quadraticCurveTo(-s * .48, -s * .1, 0, -s * .62);
+      ctx.fill(q); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, -s * .45); ctx.lineTo(0, s * .45); ctx.stroke();
+      ctx.restore(); return;
+    }
     if (p.forma === 0 || p.forma === 3) q.rect(-s / 2, -s * .32, s, s * .64);
     else if (p.forma === 1) q.arc(0, 0, s * .45, 0, 7);
     else if (p.forma === 2) stella(q, 0, 0, s * .6, s * .27, 5, 0);
@@ -544,12 +553,13 @@
   }
 
   /* ---------- fotogramma ---------- */
-  var COPERTINA_T = 12.4;
+  var COPERTINA_T = 12.4, sbuffi = [];
   /* opz: {nome, frase, firma, durataMusica T, copertina:bool} */
   function disegnaFotogramma(ctx, t, opz) {
     if (!STRATI) return;
     var cop = !!opz.copertina || t < 0.6, T = opz.durataMusica || 20, tv = COPERTINA_T + (opz.copertina ? 0 : t);
     var fr = layoutFrase(ctx, opz.frase || ''), N = preparaNome(opz.nome || '');
+    var Dtot = opz.durata || T, fineScena = opz.logo && LOGO ? Dtot - 3 : Dtot, tFirma = fineScena - 2.6;
     // --- tempi ---
     var fase0 = !cop && t < 0.6;             // copertina ferma
     var usc = cop ? 0 : eInOut((t - 0.6) / 0.8); // dissolvenza
@@ -576,12 +586,15 @@
       var dx = Math.sin(tv * .45 + i * .7) * 9 * s.prof, dy = Math.sin(tv * .33 + i) * 6 * s.prof + affondo * 90 * s.prof;
       ctx.drawImage(s.c, -M + dx, s.top + dy);
       if (s.torta) { // fiamme sopra la torta
-        var accese = 0;
+        var accese = 0; sbuffi = [];
         for (var c = 0; c < ST.candele.length; c++) {
           var k;
           if (cop || fase0) k = 1;
-          else if (t < 2.4) k = 1 - eInOut((t - 0.6) / 0.6);
-          else k = eBack((t - 2.5 - c * .16) / .45);
+          else {
+            var ti = 1.5 + c * (ST.candele.length > 1 ? 1.2 / (ST.candele.length - 1) : 0);
+            k = t < ti ? 1 - eInOut((t - 0.6) / 0.6) : eBack((t - ti) / .35);
+            sbuffi.push([ST.candele[c] + dx, ST.stoppino + dy - 18, t - ti]);
+          }
           accese += k;
           fiamma(ctx, ST.candele[c] + dx, ST.stoppino + dy, tv, c, k * ST.fiammaK);
         }
@@ -590,10 +603,24 @@
           ctx.save(); ctx.globalCompositeOperation = 'lighter';
           var pul = .16 + .03 * Math.sin(tv * 5.3) + .02 * Math.sin(tv * 9.1), rad = 420;
           var ax = ST.alone[0], ay = ST.alone[1], g = ctx.createRadialGradient(ax + dx, ay + dy, 0, ax + dx, ay + dy, rad);
-          g.addColorStop(0, 'rgba(255,190,100,' + (pul * accese / ST.candele.length) + ')'); g.addColorStop(1, 'rgba(255,170,80,0)');
+          g.addColorStop(0, 'rgba(255,190,100,' + (pul * ST.aloneK * accese / ST.candele.length) + ')'); g.addColorStop(1, 'rgba(255,170,80,0)');
           ctx.fillStyle = g; ctx.fillRect(ax - rad + dx, ay - rad + dy, rad * 2, rad * 2); ctx.restore();
         }
       }
+    }
+    // sbuffi di scintille quando si riaccendono le candeline
+    for (var sb = 0; sb < sbuffi.length; sb++) {
+      var S0 = sbuffi[sb], tau = S0[2];
+      if (tau < 0 || tau > .8) continue;
+      var pr = eOut(tau / .8);
+      for (var j = 0; j < 12; j++) {
+        var an = j / 12 * 6.283 + sb, dist = pr * (55 + (j % 3) * 22);
+        var px = S0[0] + Math.cos(an) * dist, py = S0[1] + Math.sin(an) * dist * .8 - pr * 20, rr = (j % 3 ? 6 : 10) * (1 - tau / .8) + 1;
+        ctx.save(); ctx.globalAlpha = 1 - tau / .8; ctx.fillStyle = j % 2 ? '#e3a63a' : '#f6c75a';
+        ctx.shadowColor = 'rgba(200,120,20,.6)'; ctx.shadowBlur = 8;
+        ctx.fill(stella(new Path2D(), px, py, rr * 1.4, rr * .6, 4, an)); ctx.restore();
+      }
+      scintilla(ctx, S0[0], S0[1], 30 * (1 - tau / .8), 1 - tau / .8);
     }
     // stelle appese e festoni
     var dyAlto = cop ? 0 : (t < 1.4 ? -usc * 40 : -(1 - eBack((t - 1.6) / 1)) * 40);
@@ -605,7 +632,7 @@
     else {
       if (t < 1.4) coriandoli(ctx, 0, 0, 1 - eInOut((t - 0.6) / 0.6), true);
       coriandoli(ctx, t, 2.2, 1, false);
-      scoppio(ctx, T - 1.2, t);
+      scoppio(ctx, tFirma - .3, t);
     }
 
     // frase
@@ -635,8 +662,7 @@
     var alfaNome = (cop || fase0) ? 1 : (t < 2.8 ? testoCop : 1);
     var progN = (cop || fase0) ? 1 : (t < 2.8 ? 1 : progNome);
     var luce = null;
-    if (cop) luce = 0.62;
-    else if (t >= fineNome + .3) luce = ((t - fineNome - .3) % 3.6) / 1.3 - .1;
+    if (!cop && t >= fineNome + .5) luce = ((t - fineNome - .5) % 5.5) / 1.2 - .1;
     disegnaNome(ctx, N, progN, luce, alfaNome);
     // scintille: alla punta mentre scrive, poi qua e là
     if (!cop && !fase0 && t >= tNome && t < fineNome + .7) {
@@ -649,21 +675,69 @@
     if (cop || t >= fineNome) {
       for (var q = 0; q < N.lucc.length; q++) {
         var sp = N.lucc[q], tw = Math.sin(tv * sp.v + sp.f);
-        scintilla(ctx, sp.x, sp.y, sp.s * Math.max(0, tw), tw * (cop ? 1 : clamp((t - fineNome) / .8)));
+        scintilla(ctx, sp.x, sp.y, sp.s * Math.max(0, tw) * (cop ? .7 : 1), tw * (cop ? .6 : clamp((t - fineNome) / .8)));
       }
     }
-    // firma finale
-    if (!cop && opz.firma && t > T + .2) {
-      var fa = eOut((t - T - .2) / 1.1);
-      ctx.save(); ctx.globalAlpha = fa; ctx.font = '96px ' + FONT_NOME; ctx.textAlign = 'right';
-      ctx.shadowColor = 'rgba(60,20,10,.3)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
-      ctx.fillStyle = ST.firma; ctx.fillText('Fulvio', W - 110, Math.min(fr.basso + 170, 740) + (1 - fa) * 20);
+    // firma finale, grande e centrata sotto la frase
+    if (!cop && opz.firma && t > tFirma) {
+      var fa = eOut((t - tFirma) / 1.1), fyF = Math.min(fr.basso + 205, 735);
+      ctx.save(); ctx.font = '128px ' + FONT_NOME; ctx.textAlign = 'center';
+      var wF = ctx.measureText('Fulvio').width;
+      ctx.beginPath(); ctx.rect(540 - wF / 2 - 30, fyF - 140, (wF + 60) * fa, 200); ctx.clip(); // si scrive da sinistra
+      ctx.shadowColor = 'rgba(60,20,10,.3)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 5;
+      ctx.fillStyle = ST.firma; ctx.fillText('Fulvio', 540, fyF);
       ctx.restore();
+    }
+    // chiusura col logo KYRIOS
+    if (!cop && opz.logo && LOGO && t > fineScena) disegnaChiusura(ctx, t - fineScena, tv);
+  }
+
+  var LOGO = null;
+  function impostaLogo(img) {
+    if (!img) { LOGO = null; return; }
+    var D = 600, c = tela(D + 80, D + 80), x = c.getContext('2d'), r = D / 2, cx = (D + 80) / 2;
+    x.save(); x.shadowColor = 'rgba(60,30,10,.35)'; x.shadowBlur = 34; x.shadowOffsetY = 14;
+    x.beginPath(); x.arc(cx, cx, r, 0, 7); x.fillStyle = '#fffaf0'; x.fill(); x.restore();
+    x.save(); x.beginPath(); x.arc(cx, cx, r - 12, 0, 7); x.clip();
+    var sc = Math.max((D - 24) / img.width, (D - 24) / img.height);
+    x.drawImage(img, cx - img.width * sc / 2, cx - img.height * sc / 2, img.width * sc, img.height * sc); x.restore();
+    var g = x.createLinearGradient(0, cx - r, 0, cx + r); g.addColorStop(0, '#f3d27a'); g.addColorStop(.5, '#b9852a'); g.addColorStop(1, '#efc866');
+    x.lineWidth = 12; x.strokeStyle = g; x.beginPath(); x.arc(cx, cx, r - 6, 0, 7); x.stroke();
+    LOGO = c;
+  }
+  function disegnaChiusura(ctx, u, tv) {
+    var a = eInOut(u / .6);
+    ctx.save(); ctx.globalAlpha = a;
+    var g = ctx.createRadialGradient(540, 860, 80, 540, 960, 1150); g.addColorStop(0, ST.fondo[0]); g.addColorStop(1, ST.fondo[1]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); applicaGrana(ctx, W, H);
+    ctx.restore();
+    var k = eBack((u - .25) / .8);
+    if (k > 0) {
+      var d = LOGO.width * (.82 + .18 * k);
+      ctx.save(); ctx.globalAlpha = clamp((u - .25) / .4);
+      ctx.drawImage(LOGO, 540 - d / 2, 860 - d / 2, d, d);
+      // riflesso che gira sull'anello
+      var an = tv * 1.6, rr = (LOGO.width - 80) / 2 * (d / LOGO.width) - 6;
+      scintilla(ctx, 540 + Math.cos(an) * rr, 860 + Math.sin(an) * rr, 22, .9);
+      ctx.restore();
+    }
+    var tA = clamp((u - .8) / .6);
+    if (tA > 0) {
+      ctx.save(); ctx.globalAlpha = tA; ctx.textAlign = 'center'; ctx.fillStyle = ST.frase;
+      var sz = 58; ctx.font = '700 ' + sz + 'px "CinzelKY", serif';
+      while (ctx.measureText('Comunità KYRIOS — Lecce').width > 900 && sz > 30) { sz -= 2; ctx.font = '700 ' + sz + 'px "CinzelKY", serif'; }
+      ctx.shadowColor = 'rgba(90,30,20,.25)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
+      ctx.fillText('Comunità KYRIOS — Lecce', 540, 1270 + (1 - eOut(tA)) * 24);
+      ctx.restore();
+    }
+    for (var i = 0; i < 10; i++) {
+      var an2 = i / 10 * 6.283 + tv * .3, tw = Math.sin(tv * 2.3 + i * 1.7);
+      scintilla(ctx, 540 + Math.cos(an2) * 380, 860 + Math.sin(an2) * 380, 14 * Math.max(0, tw), tw * clamp((u - .6) / .5));
     }
   }
 
   window.ScenaAuguri = {
-    W: W, H: H, usaStile: usaStile, stili: Object.keys(STILI), disegnaFotogramma: disegnaFotogramma,
+    W: W, H: H, usaStile: usaStile, impostaLogo: impostaLogo, stili: Object.keys(STILI), disegnaFotogramma: disegnaFotogramma,
     svuotaCache: function () { cacheFrase = {}; cacheNome = {}; },
     fasciaNome: function (nome) { var N = preparaNome(nome); return { top: N.top, bot: N.bot, sx: N.sx, ex: N.ex, size: N.size, righe: N.righe.length }; },
     fasciaFrase: function (ctx, f) { var r = layoutFrase(ctx, f); return { size: r.size, righe: r.righe, basso: r.basso }; }

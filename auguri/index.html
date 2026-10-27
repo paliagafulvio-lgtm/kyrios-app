@@ -36,7 +36,19 @@ header .piccolo { font-family: "CinzelKY", serif; letter-spacing: .22em; font-si
 header h1 { font-family: "GreatVibesKY", cursive; font-weight: 400; font-size: 66px; line-height: 1.05; margin: 2px 0 0; color: var(--bordeaux); }
 header p { margin: 4px 0 0; font-size: 21px; color: var(--tenue); font-style: italic; }
 .griglia { display: grid; gap: 22px; }
-@media (min-width: 900px) { .griglia { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } .lato { position: sticky; top: 16px; } }
+@media (min-width: 900px) {
+  .griglia { grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "p1 lato" "p2 lato"; column-gap: 26px; row-gap: 0; align-items: start; }
+  .foglio.parte1 { grid-area: p1; border-radius: 22px 22px 0 0; border-bottom: 0; padding-bottom: 6px; }
+  .foglio.parte2 { grid-area: p2; border-radius: 0 0 22px 22px; border-top: 0; padding-top: 14px; }
+  .lato { grid-area: lato; position: sticky; top: 16px; }
+  header { margin: 0 0 12px; } header h1 { font-size: 52px; } header p { font-size: 19px; margin-top: 0; }
+  .stile { grid-template-columns: 130px 1fr; align-items: center; padding: 8px; }
+  .stile img { aspect-ratio: 2 / 1; }
+  header .piccolo { display: inline; } header h1 { display: inline; margin-left: 14px; font-size: 48px; } header p { display: none; }
+  .parte1 .aiuto { margin-top: 4px; }
+  .spunte { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+  .campo + .campo { margin-top: 14px; }
+}
 .foglio {
   background: var(--carta2); border-radius: 22px; padding: 22px 20px; box-shadow: var(--ombra);
   border: 1px solid var(--linea); position: relative;
@@ -47,11 +59,13 @@ input[type=text] {
   width: 100%; font: inherit; font-size: 26px; padding: 14px 18px; min-height: 66px; color: var(--inchiostro);
   border: 2px solid var(--linea); border-radius: 16px; background: #fff; outline: none; transition: border-color .15s, box-shadow .15s;
 }
+input.manca { border-color: #d9822b; box-shadow: 0 0 0 4px rgba(217,130,43,.25); }
+#msgNome { margin-top: 10px; }
 input[type=text]:focus { border-color: var(--oro); box-shadow: 0 0 0 4px rgba(201,154,60,.22); }
 #frase { font-size: 22px; }
 input::placeholder { color: #b39c8f; font-style: italic; }
 .aiuto { font-size: 19px; color: var(--tenue); margin: 6px 2px 0; }
-.spunta { display: flex; gap: 14px; align-items: center; margin-top: 20px; font-size: 22px; cursor: pointer; user-select: none; }
+.spunta { display: flex; gap: 14px; align-items: center; margin-top: 16px; font-size: 22px; cursor: pointer; user-select: none; }
 .spunta input { width: 32px; height: 32px; accent-color: var(--bordeaux); flex: none; }
 .bottone {
   display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 76px; padding: 14px 20px;
@@ -78,8 +92,9 @@ input::placeholder { color: #b39c8f; font-style: italic; }
 .messaggio.avviso { background: #fff3d9; border: 2px solid #e8c07a; color: #6b4a12; }
 .messaggio.errore { background: #fde6e4; border: 2px solid #e5a29b; color: #7a2323; }
 .messaggio.ok { background: #e6f4ec; border: 2px solid #9fcfb3; color: #1d5b37; }
-.anteprima { width: min(64vw, 300px); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; box-shadow: var(--ombra); background: #f1dccb; position: relative; }
+.anteprima { width: min(56vw, 240px); margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; box-shadow: var(--ombra); background: #f1dccb; position: relative; }
 @media (min-width: 900px) { .anteprima { width: 100%; max-width: 340px; } }
+.lato .didascalia { margin-top: 8px; }
 .anteprima canvas, .anteprima video { width: 100%; height: 100%; display: block; object-fit: cover; }
 .anteprima video { position: absolute; inset: 0; background: #000; }
 .didascalia { text-align: center; font-size: 19px; color: var(--tenue); margin: 10px 0 0; font-style: italic; }
@@ -94,6 +109,9 @@ input::placeholder { color: #b39c8f; font-style: italic; }
 .risultato h2 { margin: 0; font-family: "CinzelKY", serif; font-size: 22px; color: var(--ottanio); text-align: center; letter-spacing: .05em; }
 .altro { background: none; border: 0; font: inherit; font-size: 21px; color: var(--bordeaux); text-decoration: underline; cursor: pointer; padding: 10px; justify-self: center; }
 .nascosto { display: none !important; }
+.msgris { min-height: 92px; padding: 12px 14px; border-radius: 14px; font-size: 20px; border: 2px dashed transparent; }
+.msgris.pieno { background: #e6f4ec; border: 2px solid #9fcfb3; color: #1d5b37; }
+#percento { font-weight: 700; color: var(--bordeaux); }
 footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 28px; }
 @media (max-width: 420px) { header h1 { font-size: 58px; } .foglio { padding: 20px 16px; } }
 @media (prefers-reduced-motion: reduce) { .barra i { transition: none; } }
@@ -108,12 +126,24 @@ footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 2
   </header>
 
   <div class="griglia">
-    <main class="foglio">
+    <section class="foglio parte1">
       <div class="campo">
         <label class="titolo" for="nome">Nome</label>
         <input type="text" id="nome" placeholder="Scrivi il nome" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="60" enterkeyhint="done">
+        <div class="messaggio avviso" id="msgNome" role="alert"></div>
         <p class="aiuto">Puoi scrivere anche più nomi insieme, per esempio «Anna e Marco».</p>
       </div>
+    </section>
+
+    <aside class="lato">
+      <div class="anteprima" id="riquadro">
+        <canvas id="tela" width="1080" height="1920" aria-label="Anteprima della copertina"></canvas>
+        <video id="video" class="nascosto" playsinline controls></video>
+      </div>
+      <p class="didascalia" id="didascalia">Anteprima della copertina</p>
+    </aside>
+
+    <main class="foglio parte2">
       <div class="campo">
         <label class="titolo" for="frase">Frase</label>
         <input type="text" id="frase" value="Auguri di un buon compleanno" autocomplete="off" maxlength="70" enterkeyhint="done">
@@ -125,7 +155,11 @@ footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 2
           <button type="button" class="stile" data-stile="festa" aria-pressed="false"><img src="img/stile-festa.jpg" alt=""><span>Festa</span></button>
         </div>
       </div>
-      <label class="spunta"><input type="checkbox" id="firma" checked> Alla fine metti la firma «Fulvio»</label>
+      <div class="spunte">
+        <label class="spunta"><input type="checkbox" id="firma" checked> Firma «Fulvio» alla fine</label>
+        <label class="spunta"><input type="checkbox" id="logo" checked> Logo KYRIOS alla fine</label>
+      </div>
+      <p class="aiuto">Per gli auguri di famiglia togli la spunta al logo.</p>
 
       <button class="bottone crea" id="crea" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5 21 7.5v9l-5.5-3"/></svg>
@@ -135,8 +169,9 @@ footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 2
 
       <div class="avanzamento" id="avanzamento" aria-live="polite">
         <div class="barra"><i id="barra"></i></div>
-        <p><b>Sto creando il video…</b> resta su questa pagina.</p>
-        <p id="mancano"></p>
+        <p><b>Sto creando il video…</b> <span id="percento"></span></p>
+        <p id="avvisoPagina" class="aiuto" style="text-align:center">Resta su questa pagina finché finisce.</p>
+        <p id="mancano" class="nascosto"></p>
       </div>
 
       <div class="risultato" id="risultato">
@@ -153,20 +188,16 @@ footer { text-align: center; color: var(--tenue); font-size: 17px; margin-top: 2
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
           Salva la copertina
         </button>
+        <div id="msgRis" class="msgris" role="status" aria-live="polite"></div>
         <button class="altro" id="altro" type="button">Fai un altro video</button>
       </div>
     </main>
 
-    <aside class="lato">
-      <div class="anteprima" id="riquadro">
-        <canvas id="tela" width="1080" height="1920" aria-label="Anteprima della copertina"></canvas>
-        <video id="video" class="nascosto" playsinline controls></video>
-      </div>
-      <p class="didascalia" id="didascalia">Anteprima della copertina</p>
-    </aside>
+
   </div>
   <footer>Auguri KYRIOS · funziona su computer e telefono</footer>
 </div>
+<script src="lib/mp4-muxer.js"></script>
 <script src="scena.js"></script>
 <script src="app.js"></script>
 </body>
